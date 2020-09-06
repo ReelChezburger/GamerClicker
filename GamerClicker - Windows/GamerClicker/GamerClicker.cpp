@@ -4,13 +4,30 @@
 #include <string>
 #include <stdexcept>
 #include <limits>
-#include "RandomRange.cpp"
-#include "NegativeTest.cpp"
 
 using namespace std;
 
+HWND target = NULL; // Target window declaration
+
 //picks a random float based on the data entered
-float getRandomRangeValue(float bottom, float top, float bottomLimit = -1, float topLimit = -1);
+float getRandomRangeValue(float bottom, float top, float bottomLimit = -1, float topLimit = -1) {
+    bool fuckMe = true; // fuckMe? fuckYou
+    float CPS;
+    //if no limit is passed, set the limits to be the top and bottom values
+    if (bottomLimit == -1 && topLimit == -1) {
+        bottomLimit = bottom;
+        topLimit = top;
+    }
+    //run this until a good value is found
+    while (fuckMe) {
+        //CPS is set to the bottom value + a random value within the range
+        CPS = ((top - bottom) * ((float)rand() / RAND_MAX)) + bottom;
+        if (CPS > bottomLimit && CPS < topLimit) {
+            fuckMe = false;
+        }
+    }
+    return CPS;
+};
 
 //converts CPS to a frametime
 int CPS2Delay(float clicks) {
@@ -23,6 +40,15 @@ int CPS2Delay(float clicks) {
 bool KeyIsPressed(unsigned char k) {
     USHORT status = GetAsyncKeyState(k);
     return (((status & 0x8000) >> 15) == 1) || ((status & 1) == 1);
+}
+
+void randomPause() {
+    //get random value to decide if stop click
+    if (getRandomRangeValue(0, 500) == 50) {
+        //decide length of pause
+        int sexyDelay = round(getRandomRangeValue(1000, 10000));
+        Sleep(sexyDelay);
+    }
 }
 
 int main()
@@ -52,17 +78,21 @@ int main()
     bool runProgram = true; //the main program loop will run
     bool hasRun = false; //the clicker has not run yet
     float currentCPS = 0.0; //filler variable for what CPS is assigned
-    HWND target = NULL; // Target window declaration
 
     std::cout << "Select the target window and press Scroll Lock" << endl;
 
     while (target == NULL) { //Does not leave until target is set
         if (GetKeyState(VK_SCROLL) & 0x8000) { // Checks for scroll lock to be pressed
             target = GetForegroundWindow(); // Sets target as selected window
-            while (GetKeyState(VK_SCROLL) & 0x8000) {
-
+            if (!target) {
+                std::cout << "Failed to get traget!";
             }
-            break;
+            else {
+                while (GetKeyState(VK_SCROLL) & 0x8000) { //while key is pressed do not progress so that program is not inadvertantly started
+
+                }
+                break;
+            }
         }
     }
     std::cout << "Window selected" << endl;
@@ -76,19 +106,17 @@ int main()
                 currentCPS = getRandomRangeValue(bottomNum, topNum, bottomNum, topNum);
                 hasRun = true;
             }
-            //if the program has run, pick a CPS within .5 of the previous CPS to appear fluid
+            //if the program has run, pick a CPS within .5 of the previous CPS to appear fluid, and possibly pause
             else {
-                float newLow = currentCPS - .5;
-                float newHigh = currentCPS + .5;
+                //decide if program should pause
+                randomPause();
+                //add the new targets
+                float newLow = currentCPS - 0.5;
+                float newHigh = currentCPS + 0.5;
                 currentCPS = getRandomRangeValue(newLow, newHigh, bottomNum, topNum);
             }
-            try
-            {
-                negativeTest(currentCPS); //cause an exception to throw if negative
-            }
-            catch (invalid_argument& e)
-            {
-                cerr << e.what() << endl; //output error
+            if (currentCPS < 0) {
+                std::cout << "CPS is less than 0" << endl;
                 return -1;
             }
             //wait the frametime that correlates to the picked CPS
