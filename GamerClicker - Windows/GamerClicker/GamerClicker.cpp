@@ -44,9 +44,10 @@ bool KeyIsPressed(unsigned char k) {
 
 void randomPause() {
     //get random value to decide if stop click
-    if (getRandomRangeValue(0, 500) == 50) {
+    int sexyDecider = round(getRandomRangeValue(0, 200));
+    if (sexyDecider == 50) {
         //decide length of pause
-        int sexyDelay = round(getRandomRangeValue(1000, 10000));
+        int sexyDelay = round(getRandomRangeValue(500, 10000));
         std::cout << "Adding a " << sexyDelay << "ms pause" << endl;
         Sleep(sexyDelay);
     }
