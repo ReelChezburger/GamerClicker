@@ -47,6 +47,7 @@ void randomPause() {
     if (getRandomRangeValue(0, 500) == 50) {
         //decide length of pause
         int sexyDelay = round(getRandomRangeValue(1000, 10000));
+        std::cout << "Adding a " << sexyDelay << "ms pause" << endl;
         Sleep(sexyDelay);
     }
 }
