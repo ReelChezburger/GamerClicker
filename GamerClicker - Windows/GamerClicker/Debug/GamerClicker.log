@@ -1,0 +1,5 @@
+﻿  GamerClicker.cpp
+D:\HDocuments\Code\GamerClicker\GamerClicker\GamerClicker.cpp(20,16): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+D:\HDocuments\Code\GamerClicker\GamerClicker\GamerClicker.cpp(44,30): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+D:\HDocuments\Code\GamerClicker\GamerClicker\GamerClicker.cpp(45,31): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+  GamerClicker.vcxproj -> D:\HDocuments\Code\GamerClicker\Debug\GamerClicker.exe
