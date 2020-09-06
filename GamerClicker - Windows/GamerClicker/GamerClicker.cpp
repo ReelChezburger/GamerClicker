@@ -4,7 +4,7 @@
 using namespace std;
 
 float getRandomCPS(float bottom, float top, float bottomLimit, float topLimit) {
-    bool fuckMe = true;
+    bool fuckMe = true; // fuckMe? fuckYou
     float CPS;
     while (fuckMe) {
         CPS = ((top - bottom) * ((float)rand() / RAND_MAX)) + bottom;
