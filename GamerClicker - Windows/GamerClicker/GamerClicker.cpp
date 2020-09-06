@@ -2,25 +2,15 @@
 #include <windows.h>
 #include <fstream>
 #include <string>
+#include <stdexcept>
+#include <limits>
+#include "RandomRange.cpp"
+#include "NegativeTest.cpp"
 
 using namespace std;
 
-//picks a CPS based on the data entered
-float getRandomCPS(float bottom, float top, float bottomLimit, float topLimit) {
-    bool fuckMe = true; // fuckMe? fuckYou
-    float CPS;
-    //run this until a good value is found
-    while (fuckMe) {
-        //CPS is set to the bottom value + a random value within the range
-        CPS = ((top - bottom) * ((float)rand() / RAND_MAX)) + bottom;
-        if (CPS > bottomLimit && CPS < topLimit) {
-            fuckMe = false;
-        }
-    }
-    //outputs the decided CPS to the console
-    std::cout << CPS << endl;
-    return CPS;
-};
+//picks a random float based on the data entered
+float getRandomRangeValue(float bottom, float top, float bottomLimit = -1, float topLimit = -1);
 
 //converts CPS to a frametime
 int CPS2Delay(float clicks) {
@@ -83,14 +73,23 @@ int main()
         if (runClicker == true) {
             //if the program has not run, pick a ranom CPS within the range
             if (hasRun == false) {
-                currentCPS = getRandomCPS(bottomNum, topNum, bottomNum, topNum);
+                currentCPS = getRandomRangeValue(bottomNum, topNum, bottomNum, topNum);
                 hasRun = true;
             }
             //if the program has run, pick a CPS within .5 of the previous CPS to appear fluid
             else {
                 float newLow = currentCPS - .5;
                 float newHigh = currentCPS + .5;
-                currentCPS = getRandomCPS(newLow, newHigh, bottomNum, topNum);
+                currentCPS = getRandomRangeValue(newLow, newHigh, bottomNum, topNum);
+            }
+            try
+            {
+                negativeTest(currentCPS); //cause an exception to throw if negative
+            }
+            catch (invalid_argument& e)
+            {
+                cerr << e.what() << endl; //output error
+                return -1;
             }
             //wait the frametime that correlates to the picked CPS
             Sleep(CPS2Delay(currentCPS));
