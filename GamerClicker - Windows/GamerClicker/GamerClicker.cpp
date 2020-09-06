@@ -1,5 +1,7 @@
 #include <iostream>
 #include <windows.h>
+#include <fstream>
+#include <string>
 
 using namespace std;
 
@@ -47,8 +49,8 @@ int main()
         }
     }
 
-    bool runClicker = false;
     bool runProgram = true;
+    bool runClicker = false;
     bool hasRun = false;
     float currentCPS = 0.0;
     HWND target = NULL; // Target window declaration
@@ -58,11 +60,13 @@ int main()
     while (target == NULL) { //Does not leave until target is set
         if (GetKeyState(VK_SCROLL) & 0x8000) { // Checks for scroll lock to be pressed
             target = GetForegroundWindow(); // Sets target as selected window
+            while (GetKeyState(VK_SCROLL) & 0x8000) {
+
+            }
             break;
         }
     }
     std::cout << "Window selected" << endl;
-
     while (runProgram) {
         if (runClicker == true) {
             if (hasRun == false) {
@@ -80,14 +84,16 @@ int main()
             PostMessage(target, WM_LBUTTONUP, 0, 1 & 2 << 16); // Sends left mouse button up to target window
             if (GetKeyState(VK_PAUSE) & 0x8000/*Check if high-order bit is set (1 << 15)*/) {
                 runClicker = false;
+                std::cout << "Clicker Paused" << endl;
             }
+
         }
         else if (GetKeyState(VK_SCROLL) & 0x8000/*Check if high-order bit is set (1 << 15)*/) {
             runClicker = true;
+            std::cout << "Clicker Started" << endl;
         }
         else {
             Sleep(17);
         }
     }
-
 }
