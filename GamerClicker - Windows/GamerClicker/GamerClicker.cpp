@@ -55,7 +55,10 @@ void randomPause() {
 
 int main()
 {
+    
     //creates variables to put bottom and top range values into
+    bool randomPauseBool;
+    std::string pauseString;
     float bottomNum;
     float topNum;
     bool cpsEntered = false; // false = CPS not entered/valid true = CPS valid
@@ -65,6 +68,32 @@ int main()
 
         std::cout << "Enter highest target CPS..." << endl;
         std::cin >> topNum;
+
+        //ask if you want pauses
+        bool pauseSettingSet = false;
+        while (pauseSettingSet == false) {
+            std::cout << "would you like random pauses? Y/N" << endl;
+            std::cin >> pauseString;
+
+            //conver the response to be lowercase
+            for (auto elem : pauseString) {
+                pauseString = std::tolower(elem);
+            }
+            //check the response
+            if (pauseString == "yes" || pauseString == "y" || pauseString == "") {
+                randomPauseBool = true;
+                std::cout << "Random Pauses Enabled" << endl;
+                break;
+            }
+            else if (pauseString == "no" || pauseString == "n") {
+                randomPauseBool = false;
+                std::cout << "Disabled" << endl;
+                break;
+            }
+            else {
+                std::cout << "Invalid entry, try again" << endl;
+            }
+        }
 
         if (bottomNum > topNum) { // Checks if bottom is greater than top
             std::cout << "The lowest target can not be larger than the highest target" << endl;
@@ -111,7 +140,9 @@ int main()
             //if the program has run, pick a CPS within .5 of the previous CPS to appear fluid, and possibly pause
             else {
                 //decide if program should pause
-                randomPause();
+                if (randomPauseBool == true) {
+                    randomPause();
+                }
                 //add the new targets
                 float newLow = currentCPS - 0.5;
                 float newHigh = currentCPS + 0.5;
