@@ -55,7 +55,6 @@ void randomPause() {
 
 int main()
 {
-    
     //creates variables to put bottom and top range values into
     bool randomPauseBool;
     std::string pauseString;
@@ -110,29 +109,55 @@ int main()
     bool hasRun = false; //the clicker has not run yet
     float currentCPS = 0.0; //filler variable for what CPS is assigned
 
-    std::cout << "Select the target window and press Scroll Lock" << endl;
-
+    std::string targetString = "";
+    bool windowTargeting = false;
     while (target == NULL) { //Does not leave until target is set
-        if (GetKeyState(VK_SCROLL) & 0x8000) { // Checks for scroll lock to be pressed
-            target = GetForegroundWindow(); // Sets target as selected window
-            if (!target) {
-                std::cout << "Failed to get traget!";
-            }
-            else {
-                while (GetKeyState(VK_SCROLL) & 0x8000) { //while key is pressed do not progress so that program is not inadvertantly started
+        std::cout << "would you like window targeting? Y/N" << endl;
+        std::cin >> targetString;
 
+        //conver the response to be lowercase
+        for (auto elem : targetString) {
+            targetString = std::tolower(elem);
+        }
+        //check the response
+        if (targetString == "yes" || targetString == "y" || targetString == "") {
+            windowTargeting = true;
+            std::cout << "Window targeting Enabled" << endl;
+            break;
+        }
+        else if (targetString == "no" || targetString == "n") {
+            windowTargeting = false;
+            std::cout << "Disabled" << endl;
+            break;
+        }
+        else {
+            std::cout << "Invalid entry, try again" << endl;
+        }
+        if (windowTargeting) {
+            std::cout << "Select the target window and press Scroll Lock" << endl;
+            if (GetKeyState(VK_SCROLL) & 0x8000) { // Checks for scroll lock to be pressed
+                target = GetForegroundWindow(); // Sets target as selected window
+                if (!target) {
+                    std::cout << "Failed to get traget!";
                 }
-                break;
+                else {
+                    while (GetKeyState(VK_SCROLL) & 0x8000) { //while key is pressed do not progress so that program is not inadvertantly started
+
+                    }
+                    std::cout << "Window selected" << endl;
+                    break;
+                }
             }
         }
     }
-    std::cout << "Window selected" << endl;
 
+    std::cout << "Settings completed, press Scroll Lock to start, and Pause Break to stop." << endl;
+    
     //main program loop
     while (runProgram) {
         //checks if the clicker loop is to be run
         if (runClicker == true) {
-            //if the program has not run, pick a ranom CPS within the range
+            //if the program has not run, pick a random CPS within the range
             if (hasRun == false) {
                 currentCPS = getRandomRangeValue(bottomNum, topNum, bottomNum, topNum);
                 hasRun = true;
@@ -154,9 +179,13 @@ int main()
             }
             //wait the frametime that correlates to the picked CPS
             Sleep(CPS2Delay(currentCPS));
-            //mouse_event(MOUSEEVENTF_LEFTDOWN | MOUSEEVENTF_LEFTUP, 0, 0, 0, 0); // Old Clicker code
-            PostMessage(target, WM_LBUTTONDOWN, 0, 1 & 2 << 16); // Sends left mouse button down to target window
-            PostMessage(target, WM_LBUTTONUP, 0, 1 & 2 << 16); // Sends left mouse button up to target window
+            if (!windowTargeting) {
+                mouse_event(MOUSEEVENTF_LEFTDOWN | MOUSEEVENTF_LEFTUP, 0, 0, 0, 0); //No targetting
+            }
+            else {
+                PostMessage(target, WM_LBUTTONDOWN, 0, 1 & 2 << 16); // Sends left mouse button down to target window
+                PostMessage(target, WM_LBUTTONUP, 0, 1 & 2 << 16); // Sends left mouse button up to target window
+            }
 
             //checks if pause is being pressed
             if (GetKeyState(VK_PAUSE) & 0x8000/*Check if high-order bit is set (1 << 15)*/) {
