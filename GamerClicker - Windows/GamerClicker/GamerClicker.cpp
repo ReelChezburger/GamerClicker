@@ -111,30 +111,30 @@ int main()
 
     std::string targetString = "";
     bool windowTargeting = false;
-    while (target == NULL) { //Does not leave until target is set
-        std::cout << "would you like window targeting? Y/N" << endl;
-        std::cin >> targetString;
+    std::cout << "would you like window targeting? Y/N" << endl;
+    std::cin >> targetString;
 
-        //conver the response to be lowercase
-        for (auto elem : targetString) {
-            targetString = std::tolower(elem);
-        }
-        //check the response
-        if (targetString == "yes" || targetString == "y" || targetString == "") {
-            windowTargeting = true;
-            std::cout << "Window targeting Enabled" << endl;
-            break;
-        }
-        else if (targetString == "no" || targetString == "n") {
-            windowTargeting = false;
-            std::cout << "Disabled" << endl;
-            break;
-        }
-        else {
-            std::cout << "Invalid entry, try again" << endl;
-        }
+    //conver the response to be lowercase
+    for (auto elem : targetString) {
+        targetString = std::tolower(elem);
+    }
+    //check the response
+    if (targetString == "yes" || targetString == "y" || targetString == "") {
+        windowTargeting = true;
+        std::cout << "Window targeting Enabled" << endl;
+    }
+    else if (targetString == "no" || targetString == "n") {
+        windowTargeting = false;
+        std::cout << "Disabled" << endl;
+    }
+    else {
+        std::cout << "Invalid entry, try again" << endl;
+    }
+    if (windowTargeting) {
+        std::cout << "Select the target window and press Scroll Lock" << endl;
+    }
+    while (target == NULL) { //Does not leave until target is set
         if (windowTargeting) {
-            std::cout << "Select the target window and press Scroll Lock" << endl;
             if (GetKeyState(VK_SCROLL) & 0x8000) { // Checks for scroll lock to be pressed
                 target = GetForegroundWindow(); // Sets target as selected window
                 if (!target) {
@@ -148,6 +148,9 @@ int main()
                     break;
                 }
             }
+        }
+        else {
+            break;
         }
     }
 
