@@ -141,11 +141,11 @@ int main()
     }
     //check the response
     if (targetString == "yes" || targetString == "y" || targetString == "") {
-        windowTargeting = true;
+        autoEat = true;
         std::cout << "Auto right click Enabled" << endl;
     }
     else if (targetString == "no" || targetString == "n") {
-        windowTargeting = false;
+        autoEat = false;
         std::cout << "Disabled" << endl;
     }
     else {
@@ -213,17 +213,19 @@ int main()
                 PostMessage(target, WM_LBUTTONDOWN, 0, 1 & 2 << 16); // Sends left mouse button down to target window
                 PostMessage(target, WM_LBUTTONUP, 0, 1 & 2 << 16); // Sends left mouse button up to target window
             }
-            clickIndex++;
-            if (clickIndex >= 100) {
-                if (!windowTargeting) {
-                    mouse_event(MOUSEEVENTF_RIGHTDOWN, 0, 0, 0, 0); //No targetting
-                    Sleep(2000);
-                    mouse_event(MOUSEEVENTF_RIGHTUP, 0, 0, 0, 0); //No targetting
-                }
-                else {
-                    PostMessage(target, WM_RBUTTONDOWN, 0, 1 & 2 << 16); // Sends left mouse button down to target window
-                    Sleep(2000);
-                    PostMessage(target, WM_RBUTTONUP, 0, 1 & 2 << 16); // Sends left mouse button up to target window
+            if (autoEat) {
+                clickIndex++;
+                if (clickIndex >= 100) {
+                    if (!windowTargeting) {
+                        mouse_event(MOUSEEVENTF_RIGHTDOWN, 0, 0, 0, 0); //No targetting
+                        Sleep(2000);
+                        mouse_event(MOUSEEVENTF_RIGHTUP, 0, 0, 0, 0); //No targetting
+                    }
+                    else {
+                        PostMessage(target, WM_RBUTTONDOWN, 0, 1 & 2 << 16); // Sends left mouse button down to target window
+                        Sleep(2000);
+                        PostMessage(target, WM_RBUTTONUP, 0, 1 & 2 << 16); // Sends left mouse button up to target window
+                    }
                 }
             }
             //checks if pause is being pressed
