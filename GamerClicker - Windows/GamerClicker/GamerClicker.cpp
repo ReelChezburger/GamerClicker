@@ -130,6 +130,28 @@ int main()
     else {
         std::cout << "Invalid entry, try again" << endl;
     }
+
+    bool autoEat = false;
+    std::cout << "Would you like auto right click periodically? Y/N" << endl;
+    std::cin >> targetString;
+
+    //conver the response to be lowercase
+    for (auto elem : targetString) {
+        targetString = std::tolower(elem);
+    }
+    //check the response
+    if (targetString == "yes" || targetString == "y" || targetString == "") {
+        windowTargeting = true;
+        std::cout << "Auto right click Enabled" << endl;
+    }
+    else if (targetString == "no" || targetString == "n") {
+        windowTargeting = false;
+        std::cout << "Disabled" << endl;
+    }
+    else {
+        std::cout << "Invalid entry, try again" << endl;
+    }
+
     if (windowTargeting) {
         std::cout << "Select the target window and press Scroll Lock" << endl;
     }
@@ -156,6 +178,8 @@ int main()
 
     std::cout << "Settings completed, press Scroll Lock to start, and Pause Break to stop." << endl;
     
+    int clickIndex = 0;
+
     //main program loop
     while (runProgram) {
         //checks if the clicker loop is to be run
@@ -189,7 +213,19 @@ int main()
                 PostMessage(target, WM_LBUTTONDOWN, 0, 1 & 2 << 16); // Sends left mouse button down to target window
                 PostMessage(target, WM_LBUTTONUP, 0, 1 & 2 << 16); // Sends left mouse button up to target window
             }
-
+            clickIndex++;
+            if (clickIndex >= 100) {
+                if (!windowTargeting) {
+                    mouse_event(MOUSEEVENTF_RIGHTDOWN, 0, 0, 0, 0); //No targetting
+                    Sleep(2000);
+                    mouse_event(MOUSEEVENTF_RIGHTUP, 0, 0, 0, 0); //No targetting
+                }
+                else {
+                    PostMessage(target, WM_RBUTTONDOWN, 0, 1 & 2 << 16); // Sends left mouse button down to target window
+                    Sleep(2000);
+                    PostMessage(target, WM_RBUTTONUP, 0, 1 & 2 << 16); // Sends left mouse button up to target window
+                }
+            }
             //checks if pause is being pressed
             if (GetKeyState(VK_PAUSE) & 0x8000/*Check if high-order bit is set (1 << 15)*/) {
                 //stops the clicker loop
