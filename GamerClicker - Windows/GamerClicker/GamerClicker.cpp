@@ -188,7 +188,7 @@ int main()
         if (runClicker == true) {
             //if the program has not run, pick a random CPS within the range
             if (hasRun == false) {
-                if (bottomNum != topNum) {
+                if (topNum - bottomNum >= 0.5f) {
                     currentCPS = getRandomRangeValue(bottomNum, topNum, bottomNum, topNum);
                 }
                 else {
@@ -205,7 +205,7 @@ int main()
                 //add the new targets
                 float newLow = currentCPS - 0.5;
                 float newHigh = currentCPS + 0.5;
-                if (bottomNum != topNum) {
+                if (topNum - bottomNum >= 0.5f) {
                     currentCPS = getRandomRangeValue(newLow, newHigh, bottomNum, topNum);
                 }
                 else {
