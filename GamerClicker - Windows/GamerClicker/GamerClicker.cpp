@@ -12,21 +12,23 @@ HWND target = NULL; // Target window declaration
 //picks a random float based on the data entered
 float getRandomRangeValue(float bottom, float top, float bottomLimit = -1, float topLimit = -1) {
     bool fuckMe = true; // fuckMe? fuckYou
-    float CPS;
+    float cps;
     //if no limit is passed, set the limits to be the top and bottom values
     if (bottomLimit == -1 && topLimit == -1) {
         bottomLimit = bottom;
         topLimit = top;
     }
+
     //run this until a good value is found
     while (fuckMe) {
         //CPS is set to the bottom value + a random value within the range
-        CPS = ((top - bottom) * ((float)rand() / RAND_MAX)) + bottom;
-        if (CPS > bottomLimit && CPS < topLimit) {
+        cps = ((top - bottom) * ((float)rand() / RAND_MAX)) + bottom;
+        if (cps > bottomLimit && cps < topLimit) {
             fuckMe = false;
         }
     }
-    return CPS;
+
+    return cps;
 };
 
 //converts CPS to a frametime
@@ -186,7 +188,12 @@ int main()
         if (runClicker == true) {
             //if the program has not run, pick a random CPS within the range
             if (hasRun == false) {
-                currentCPS = getRandomRangeValue(bottomNum, topNum, bottomNum, topNum);
+                if (bottomNum != topNum) {
+                    currentCPS = getRandomRangeValue(bottomNum, topNum, bottomNum, topNum);
+                }
+                else {
+                    currentCPS = bottomNum;
+                }
                 hasRun = true;
             }
             //if the program has run, pick a CPS within .5 of the previous CPS to appear fluid, and possibly pause
@@ -198,7 +205,12 @@ int main()
                 //add the new targets
                 float newLow = currentCPS - 0.5;
                 float newHigh = currentCPS + 0.5;
-                currentCPS = getRandomRangeValue(newLow, newHigh, bottomNum, topNum);
+                if (bottomNum != topNum) {
+                    currentCPS = getRandomRangeValue(newLow, newHigh, bottomNum, topNum);
+                }
+                else {
+                    currentCPS = bottomNum;
+                }
             }
             if (currentCPS < 0) {
                 std::cout << "CPS is less than 0" << endl;
