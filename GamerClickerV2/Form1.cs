@@ -7,43 +7,32 @@ using System.Drawing;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Windows.Input;
 
 namespace GamerClickerV2
 {
     public partial class Form1 : Form
     {
-        private const int WM_LBUTTONDOWN = 0x201;
-        private const int WM_LBUTTONUP = 0x202;
-        private const int WM_RBUTTONDOWN = 0x204;
-        private const int WM_RBUTTONUP = 0x205;
-        [DllImport("user32.dll")]
-        static extern bool PostMessage(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
-
-        [DllImport("user32.dll")]
-        static extern IntPtr GetForegroundWindow();
-
-        [DllImport("user32.dll")]
-        static extern int GetWindowText(IntPtr hWnd, StringBuilder text, int count);
-
-        private IntPtr autoClickWindow = IntPtr.Zero;
-
         OverlayForm overlayForm = OverlayForm.getInstance();
+        public static Form1 mInstance;
+
+        public static Form1 getInstance()
+        {
+            if (mInstance == null)
+                mInstance = new Form1();
+            return mInstance;
+        }
 
         public Form1()
         {
             InitializeComponent();
             overlayForm.Hide();
-        }
-
-        private void grabActiveWindow(object sender, EventArgs e)
-        {
-            Thread.Sleep(2000);
-            autoClickWindow = GetForegroundWindow();
-            Debug.WriteLine("Grabbed Window");
-            GetActiveWindow();
+            panel2.Hide();
+            AutoClicker.init();
         }
 
         private void performClick(object sender, EventArgs e)
@@ -57,18 +46,7 @@ namespace GamerClickerV2
             }*/
             //AutoClicker.setActiveTest();
         }
-        private void GetActiveWindow()
-        {
-            const int nChars = 256;
-            IntPtr handle;
-            StringBuilder Buff = new StringBuilder(nChars);
-            handle = GetForegroundWindow();
-            if (GetWindowText(handle, Buff, nChars) > 0)
-            {
-                Console.WriteLine(Buff.ToString());
-            }
-        }
-
+ 
         private void checkBox4_CheckedChanged(object sender, EventArgs e)
         {
             if (checkBox4.Checked) {
@@ -76,6 +54,147 @@ namespace GamerClickerV2
             } else {
                 
             }
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            AutoClicker.autoClickerPeriodicTimer.Stop();
+            int windowSelectionTimeOut = 15000;
+            int windowGrabberClockInterval = 200;
+            int index = 0;
+            button3.Text = "Press Scroll Lock to Select";
+            Task<bool> windowGrabber = Task<bool>.Factory.StartNew(() =>
+            {
+                int startVar = AutoClicker.GetKeyState(145);
+                while (AutoClicker.GetKeyState(145) == startVar)
+                {
+                    index++;
+                    Thread.Sleep(windowGrabberClockInterval);
+                    if (windowSelectionTimeOut / windowGrabberClockInterval < index)
+                    {
+                        return false;
+                    }
+                }
+                AutoClicker.autoClickWindow = AutoClicker.GetForegroundWindow();
+                return true;
+            });
+            bool windowResult = windowGrabber.Result;
+            if (windowResult)
+            {
+                label5.Text = AutoClicker.GetActiveWindow();
+                button3.Text = "Select a New Window";
+            } else
+            {
+                button3.Text = "Select Window";
+            }
+            AutoClicker.autoClickerPeriodicTimer.Start();
+        }
+
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+            if (checkBox1.Checked)
+            {
+                panel2.Show();
+            }
+            else
+            {
+                panel2.Hide();
+            }
+        }
+
+        public void deactivateAllSettings()
+        {
+            radioButton1.Enabled = false;
+            radioButton2.Enabled = false;
+            radioButton3.Enabled = false;
+            radioButton4.Enabled = false;
+
+            textBox1.Enabled = false;
+            textBox2.Enabled = false;
+
+            checkBox1.Enabled = false;
+            checkBox2.Enabled = false;
+            checkBox3.Enabled = false;
+
+            button3.Enabled = false;
+
+            label1.Enabled = false;
+            label2.Enabled = false;
+            label3.Enabled = false;
+        }
+
+        public void activateAllSettings()
+        {
+            radioButton1.Enabled = true;
+            radioButton2.Enabled = true;
+            radioButton3.Enabled = true;
+            radioButton4.Enabled = true;
+
+            textBox1.Enabled = true;
+            textBox2.Enabled = true;
+
+            checkBox1.Enabled = true;
+            checkBox2.Enabled = true;
+            checkBox3.Enabled = true;
+
+            button3.Enabled = true;
+
+            label1.Enabled = true;
+            label2.Enabled = true;
+            label3.Enabled = true;
+        }
+
+        private void radioButton1_CheckedChanged(object sender, EventArgs e)
+        {
+            if (radioButton1.Checked)
+            {
+                AutoClicker.activeMode = AutoClicker.modes.LEFT;
+            }
+        }
+
+        private void radioButton2_CheckedChanged(object sender, EventArgs e)
+        {
+            if (radioButton2.Checked)
+            {
+                AutoClicker.activeMode = AutoClicker.modes.RIGHT;
+            }
+        }
+
+        private void radioButton3_CheckedChanged(object sender, EventArgs e)
+        {
+            if (radioButton3.Checked)
+            {
+                AutoClicker.activeMode = AutoClicker.modes.LEFTHOLD;
+            }
+        }
+
+        private void radioButton4_CheckedChanged(object sender, EventArgs e)
+        {
+            if (radioButton4.Checked)
+            {
+                AutoClicker.activeMode = AutoClicker.modes.RIGHTHOLD;
+            }
+        }
+
+        public string getTextBox1Value()
+        {
+            return textBox1.Text;
+        }
+
+        public string getTextBox2Value()
+        {
+            return textBox2.Text;
+        }
+
+        private void textBox_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == '.' && (sender as TextBox).Text.Contains('.'))
+                e.Handled = true;
+            if (char.IsNumber(e.KeyChar) || e.KeyChar == '.')
+            {
+                if (Regex.IsMatch((sender as TextBox).Text, "^\\d*\\.\\d{4}$")) e.Handled = true;
+            }
+            else e.Handled = e.KeyChar != (char)Keys.Back;
         }
     }
 }
