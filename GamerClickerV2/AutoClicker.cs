@@ -65,11 +65,25 @@ namespace GamerClickerV2
             bool randomPauseBool = Form1.getInstance().getRandomPause();
             int clickIndex = 0;
             if (activeMode == modes.LEFT) {
-                activeMouseActionDown = WM_LBUTTONDOWN;
-                activeMouseActionUp = WM_LBUTTONUP;
+                if (windowTargeting)
+                {
+                    activeMouseActionDown = WM_LBUTTONDOWN;
+                    activeMouseActionUp = WM_LBUTTONUP;
+                } else
+                {
+                    activeMouseActionDown = WM_LBUTTONDOWNEvnt;
+                    activeMouseActionUp = WM_LBUTTONUPEvnt;
+                }
             } else {
-                activeMouseActionDown = WM_RBUTTONDOWN;
-                activeMouseActionUp = WM_RBUTTONUP;
+                if (windowTargeting)
+                {
+                    activeMouseActionDown = WM_RBUTTONDOWN;
+                    activeMouseActionUp = WM_RBUTTONUP;
+                } else
+                {
+                    activeMouseActionDown = WM_RBUTTONDOWNEvnt;
+                    activeMouseActionUp = WM_RBUTTONUPEvnt;
+                }
             }
             while (running)
             {
@@ -107,10 +121,7 @@ namespace GamerClickerV2
                 Thread.Sleep(CPS2Delay(currentCPS));
                 if (!windowTargeting)
                 {
-                    MousePoint position = GetCursorPosition();
-                    mouse_event(activeMouseActionDown, 0, 0, 0, 0);
-                    Thread.Sleep(10);
-                    mouse_event(activeMouseActionUp, 0, 0, 0, 0);
+                    mouse_event(activeMouseActionDown | activeMouseActionUp, 0, 0, 0, 0);
                     
                 }
                 else
@@ -271,8 +282,12 @@ namespace GamerClickerV2
 
         private const int WM_LBUTTONDOWN = 0x201;
         private const int WM_LBUTTONUP = 0x202;
-        private const int WM_RBUTTONDOWN = 0x204;
-        private const int WM_RBUTTONUP = 0x205;
+        private const int WM_LBUTTONDOWNEvnt = 0x02;
+        private const int WM_LBUTTONUPEvnt = 0x04;
+        private const int WM_RBUTTONDOWNEvnt = 0x0008;
+        private const int WM_RBUTTONUPEvnt = 0x0010;
+        private const int WM_RBUTTONDOWN = 0x0204;
+        private const int WM_RBUTTONUP = 0x0205;
         [DllImport("user32.dll")]
         public static extern bool PostMessage(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
 
