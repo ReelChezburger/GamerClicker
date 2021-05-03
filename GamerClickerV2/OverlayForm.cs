@@ -219,13 +219,13 @@ namespace GamerClickerV2
 
         public OverlayForm()
         {
-            InitializeComponent();
+            /*InitializeComponent();
 
             MaximizeEverything();
 
             SetFormTransparent(Handle);
 
-            SetTheLayeredWindowAttribute();
+            SetTheLayeredWindowAttribute();*/
         }
 
         private void MaximizeEverything()

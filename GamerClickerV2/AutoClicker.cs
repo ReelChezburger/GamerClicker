@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -18,7 +19,6 @@ namespace GamerClickerV2
         public static modes activeMode;
         private static readonly OverlayForm overlay = new OverlayForm();
         public static System.Windows.Forms.Timer autoClickerPeriodicTimer = new System.Windows.Forms.Timer { Interval = 50 };
-        private static Form1 form1;
         private static double bottomNum;
         private static double topNum;
         private static uint activeMouseActionDown;
@@ -42,18 +42,17 @@ namespace GamerClickerV2
 
         private static void toggle()
         {
-            form1 = Form1.getInstance();
             if (!running)
             {
                 running = true;
                 enable();
-                form1.deactivateAllSettings();
+                Form1.getInstance().deactivateAllSettings();
             } 
             else
             {
                 running = false;
                 disable();
-                form1.activateAllSettings();
+                Form1.getInstance().activateAllSettings();
             }
             updateOverlay();
         }
@@ -61,7 +60,10 @@ namespace GamerClickerV2
         {
             bool hasRun = false;
             double currentCPS = 0.0;
-            bool windowTargeting = true;
+            bool windowTargeting = Form1.getInstance().getWindowTargeting();
+            bool autoEat = Form1.getInstance().getAutoEat();
+            bool randomPauseBool = Form1.getInstance().getRandomPause();
+            int clickIndex = 0;
             if (activeMode == modes.LEFT) {
                 activeMouseActionDown = WM_LBUTTONDOWN;
                 activeMouseActionUp = WM_LBUTTONUP;
@@ -86,11 +88,10 @@ namespace GamerClickerV2
                 //if the program has run, pick a CPS within .5 of the previous CPS to appear fluid, and possibly pause
                 else
                 {
-                    //decide if program should pause
-                    /*if (randomPauseBool == true)
+                    if (randomPauseBool == true)
                     {
                         randomPause();
-                    }*/
+                    }
                     //add the new targets
                     double newLow = currentCPS - 0.5;
                     double newHigh = currentCPS + 0.5;
@@ -106,7 +107,11 @@ namespace GamerClickerV2
                 Thread.Sleep(CPS2Delay(currentCPS));
                 if (!windowTargeting)
                 {
-                    //mouse_event(MOUSEEVENTF_LEFTDOWN | MOUSEEVENTF_LEFTUP, 0, 0, 0, 0); //No targetting
+                    MousePoint position = GetCursorPosition();
+                    mouse_event(activeMouseActionDown, 0, 0, 0, 0);
+                    Thread.Sleep(10);
+                    mouse_event(activeMouseActionUp, 0, 0, 0, 0);
+                    
                 }
                 else
                 {
@@ -114,33 +119,26 @@ namespace GamerClickerV2
                     Thread.Sleep(10);
                     PostMessage(autoClickWindow, activeMouseActionUp, IntPtr.Zero, IntPtr.Zero);
                 }
-                /*if (autoEat)
+                if (autoEat)
                 {
                     clickIndex++;
                     if (clickIndex >= 100)
                     {
                         if (!windowTargeting)
                         {
-                            mouse_event(MOUSEEVENTF_RIGHTDOWN, 0, 0, 0, 0); //No targetting
-                            Sleep(2000);
-                            mouse_event(MOUSEEVENTF_RIGHTUP, 0, 0, 0, 0); //No targetting
+                            MousePoint position = GetCursorPosition();
+                            mouse_event(WM_RBUTTONDOWN, position.X, position.Y, 0, 0);
+                            Thread.Sleep(2000);
+                            mouse_event(WM_RBUTTONUP, position.X, position.Y, 0, 0);
                         }
                         else
                         {
-                            PostMessage(target, WM_RBUTTONDOWN, 0, 1 & 2 << 16); // Sends left mouse button down to target window
-                            Sleep(2000);
-                            PostMessage(target, WM_RBUTTONUP, 0, 1 & 2 << 16); // Sends left mouse button up to target window
+                            PostMessage(autoClickWindow, WM_RBUTTONDOWN, IntPtr.Zero, IntPtr.Zero);
+                            Thread.Sleep(2000);
+                            PostMessage(autoClickWindow, WM_RBUTTONUP, IntPtr.Zero, IntPtr.Zero);
                         }
                     }
-                }*/
-                //checks if pause is being pressed
-                //if (GetKeyState(VK_PAUSE) & 0x8000/*Check if high-order bit is set (1 << 15)*/)
-                /*{
-                    //stops the clicker loop
-                    runClicker = false;
-                    std::cout << "Clicker Paused" << endl;
-                }*/
-
+                }
             }
         }
         private static void autoHoldAction(object sender, EventArgs e)
@@ -152,14 +150,14 @@ namespace GamerClickerV2
         }
         private static void enable()
         {
-            try { 
-                bottomNum = Convert.ToDouble(form1.getTextBox1Value());
+            try {
+                bottomNum = Convert.ToDouble(Form1.getInstance().getTextBox1Value());
             } catch
             {
                 bottomNum = 0;
             }
             try { 
-                topNum = Convert.ToDouble(form1.getTextBox2Value());
+                topNum = Convert.ToDouble(Form1.getInstance().getTextBox2Value());
             } catch
             {
                 topNum = 0;
@@ -193,16 +191,28 @@ namespace GamerClickerV2
 
         private static void autoClickerPeriodicTimer_Tick(object sender, EventArgs e)
         {
-            oldActiveKey = activeKey;
-            activeKey = (GetAsyncKeyState(Keys.Scroll) & 32768) > 0;
-            if (oldActiveKey != activeKey && (GetAsyncKeyState(Keys.Scroll) & 32768) > 0)
+            if (Form1.getInstance().getTabControl1SelectedIndex() == 0)
             {
-                toggle();
+                oldActiveKey = activeKey;
+                activeKey = (GetAsyncKeyState(Keys.Scroll) & 32768) > 0;
+                if (oldActiveKey != activeKey && (GetAsyncKeyState(Keys.Scroll) & 32768) > 0)
+                {
+                    toggle();
+                }
             }
         }
+
+        public static void disableClicker()
+        {
+            if (running)
+            {
+                disable();
+            }
+        }
+
         private static void updateOverlay()
         {
-            overlay.Refresh();
+            //overlay.Refresh();
         }
         public static string GetActiveWindow()
         {
@@ -251,6 +261,14 @@ namespace GamerClickerV2
             return -1;
         }
 
+        public static MousePoint GetCursorPosition()
+        {
+            MousePoint currentMousePoint;
+            var gotPoint = GetCursorPos(out currentMousePoint);
+            if (!gotPoint) { currentMousePoint = new MousePoint(0, 0); }
+            return currentMousePoint;
+        }
+
         private const int WM_LBUTTONDOWN = 0x201;
         private const int WM_LBUTTONUP = 0x202;
         private const int WM_RBUTTONDOWN = 0x204;
@@ -271,5 +289,24 @@ namespace GamerClickerV2
 
         [DllImport("user32.dll")]
         public static extern short GetAsyncKeyState(System.Windows.Forms.Keys vKey);
+
+        [DllImport("user32.dll")]
+        private static extern void mouse_event(uint dwFlags, int dx, int dy, int dwData, int dwExtraInfo);
+
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool GetCursorPos(out MousePoint lpMousePoint);
+
+        public struct MousePoint
+        {
+            public int X;
+            public int Y;
+
+            public MousePoint(int x, int y)
+            {
+                X = x;
+                Y = y;
+            }
+        }
     }
 }

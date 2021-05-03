@@ -17,8 +17,8 @@ namespace GamerClickerV2
 {
     public partial class Form1 : Form
     {
-        OverlayForm overlayForm = OverlayForm.getInstance();
-        public static Form1 mInstance;
+        //OverlayForm overlayForm = OverlayForm.getInstance();
+        public static Form1 mInstance = null;
 
         public static Form1 getInstance()
         {
@@ -30,7 +30,7 @@ namespace GamerClickerV2
         public Form1()
         {
             InitializeComponent();
-            overlayForm.Hide();
+            //overlayForm.Hide();
             panel2.Hide();
             AutoClicker.init();
         }
@@ -186,15 +186,56 @@ namespace GamerClickerV2
             return textBox2.Text;
         }
 
+        public bool getWindowTargeting()
+        {
+            return checkBox1.Checked;
+        }
+
+        public bool getAutoEat()
+        {
+            return checkBox3.Checked;
+        }
+
+        public bool getRandomPause()
+        {
+            return checkBox2.Checked;
+        }
+
+        public int getTabControl1SelectedIndex()
+        {
+            return tabControl1.SelectedIndex;
+        }
+
+        private void TabControl1_SelectedIndexChanged(object sender, System.EventArgs e)
+        {
+            if (tabControl1.SelectedIndex != 0)
+                AutoClicker.disableClicker();
+        }
+
         private void textBox_KeyPress(object sender, KeyPressEventArgs e)
         {
-            if (e.KeyChar == '.' && (sender as TextBox).Text.Contains('.'))
+            if (e.KeyChar == '.' && ((TextBox)sender).Text.Contains('.'))
                 e.Handled = true;
             if (char.IsNumber(e.KeyChar) || e.KeyChar == '.')
             {
-                if (Regex.IsMatch((sender as TextBox).Text, "^\\d*\\.\\d{4}$")) e.Handled = true;
+                if (Regex.IsMatch(((TextBox)sender).Text, "^\\d*\\.\\d{4}$")) e.Handled = true;
             }
             else e.Handled = e.KeyChar != (char)Keys.Back;
+        }
+
+        private void tabPage1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void radioButton5_CheckedChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label8_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
