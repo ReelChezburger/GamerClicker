@@ -181,7 +181,6 @@ namespace GamerClickerV2
             if (radioButton9.Checked)
             {
                 AutoClicker.activeMode = AutoClicker.modes.LEFTRIGHTHOLD;
-                Console.WriteLine("Check Changed");
             }
         }
 
