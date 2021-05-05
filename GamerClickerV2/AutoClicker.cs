@@ -211,7 +211,7 @@ namespace GamerClickerV2
                     PostMessage(autoClickWindow, WM_LBUTTONDOWN, IntPtr.Zero, IntPtr.Zero);
                     PostMessage(autoClickWindow, WM_RBUTTONDOWN, IntPtr.Zero, IntPtr.Zero);
                 }
-                Thread.Sleep(500);
+                Thread.Sleep(5000);
             }
         }
         private static void enable()
