@@ -176,6 +176,15 @@ namespace GamerClickerV2
             }
         }
 
+        private void radioButton9_CheckedChanged(object sender, EventArgs e)
+        {
+            if (radioButton9.Checked)
+            {
+                AutoClicker.activeMode = AutoClicker.modes.LEFTRIGHTHOLD;
+                Console.WriteLine("Check Changed");
+            }
+        }
+
         public string getTextBox1Value()
         {
             return textBox1.Text;
@@ -224,11 +233,6 @@ namespace GamerClickerV2
         }
 
         private void tabPage1_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void radioButton5_CheckedChanged(object sender, EventArgs e)
         {
 
         }

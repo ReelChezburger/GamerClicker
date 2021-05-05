@@ -27,7 +27,8 @@ namespace GamerClickerV2
             LEFT,
             RIGHT,
             LEFTHOLD,
-            RIGHTHOLD
+            RIGHTHOLD,
+            LEFTRIGHTHOLD
         }
 
         public static void init()
@@ -152,26 +153,87 @@ namespace GamerClickerV2
                 }
             }
         }
-        private static void autoHoldAction(object sender, EventArgs e)
+        private static void autoHoldAction()
         {
+            bool windowTargeting = Form1.getInstance().getWindowTargeting();
+            if (activeMode == modes.LEFTHOLD)
+            {
+                if (windowTargeting)
+                {
+                    activeMouseActionDown = WM_LBUTTONDOWN;
+                    activeMouseActionUp = WM_LBUTTONUP;
+                }
+                else
+                {
+                    activeMouseActionDown = WM_LBUTTONDOWNEvnt;
+                    activeMouseActionUp = WM_LBUTTONUPEvnt;
+                }
+            }
+            else
+            {
+                if (windowTargeting)
+                {
+                    activeMouseActionDown = WM_RBUTTONDOWN;
+                    activeMouseActionUp = WM_RBUTTONUP;
+                }
+                else
+                {
+                    activeMouseActionDown = WM_RBUTTONDOWNEvnt;
+                    activeMouseActionUp = WM_RBUTTONUPEvnt;
+                }
+            }
             while (running)
             {
+                if (!windowTargeting)
+                {
+                    mouse_event(activeMouseActionDown, 0, 0, 0, 0);
 
+                }
+                else
+                {
+                    PostMessage(autoClickWindow, activeMouseActionDown, IntPtr.Zero, IntPtr.Zero);
+                }
+                Thread.Sleep(500);
+            }
+        }
+        private static void holdBothAction()
+        {
+            bool windowTargeting = Form1.getInstance().getWindowTargeting();
+            while (running)
+            {
+                if (!windowTargeting)
+                {
+                    mouse_event(WM_LBUTTONDOWNEvnt, 0, 0, 0, 0);
+                    mouse_event(WM_RBUTTONDOWNEvnt, 0, 0, 0, 0);
+                }
+                else
+                {
+                    PostMessage(autoClickWindow, WM_LBUTTONDOWN, IntPtr.Zero, IntPtr.Zero);
+                    PostMessage(autoClickWindow, WM_RBUTTONDOWN, IntPtr.Zero, IntPtr.Zero);
+                }
+                Thread.Sleep(500);
             }
         }
         private static void enable()
         {
-            try {
-                bottomNum = Convert.ToDouble(Form1.getInstance().getTextBox1Value());
-            } catch
+            if (activeMode == modes.LEFT || activeMode == modes.RIGHT)
             {
-                bottomNum = 0;
-            }
-            try { 
-                topNum = Convert.ToDouble(Form1.getInstance().getTextBox2Value());
-            } catch
-            {
-                topNum = 0;
+                try
+                {
+                    bottomNum = Convert.ToDouble(Form1.getInstance().getTextBox1Value());
+                }
+                catch
+                {
+                    bottomNum = 0;
+                }
+                try
+                {
+                    topNum = Convert.ToDouble(Form1.getInstance().getTextBox2Value());
+                }
+                catch
+                {
+                    topNum = 0;
+                }
             }
             switch (activeMode)
             {
@@ -181,21 +243,39 @@ namespace GamerClickerV2
                     return;
                 case modes.LEFTHOLD:
                 case modes.RIGHTHOLD:
-                    
+                    Task autoHoldTask = Task.Factory.StartNew(() => { autoHoldAction(); });
+                    return;
+                case modes.LEFTRIGHTHOLD:
+                    Task autoHoldBothTask = Task.Factory.StartNew(() => { holdBothAction(); });
                     return;
             }
         }
         private static void disable()
         {
+            bool windowTargeting = Form1.getInstance().getWindowTargeting();
             switch (activeMode)
             {
                 case modes.LEFT:
                 case modes.RIGHT:
-
                     return;
                 case modes.LEFTHOLD:
                 case modes.RIGHTHOLD:
-
+                    if (!windowTargeting)
+                        mouse_event(activeMouseActionUp, 0, 0, 0, 0);
+                    else
+                        PostMessage(autoClickWindow, activeMouseActionUp, IntPtr.Zero, IntPtr.Zero);
+                    return;
+                case modes.LEFTRIGHTHOLD:
+                    if (!windowTargeting)
+                    {
+                        mouse_event(WM_LBUTTONUPEvnt, 0, 0, 0, 0);
+                        mouse_event(WM_RBUTTONUPEvnt, 0, 0, 0, 0);
+                    }
+                    else
+                    {
+                        PostMessage(autoClickWindow, WM_LBUTTONUP, IntPtr.Zero, IntPtr.Zero);
+                        PostMessage(autoClickWindow, WM_RBUTTONUP, IntPtr.Zero, IntPtr.Zero);
+                    }
                     return;
             }
         }

@@ -66,6 +66,7 @@ namespace GamerClickerV2
             this.radioButton7 = new System.Windows.Forms.RadioButton();
             this.radioButton8 = new System.Windows.Forms.RadioButton();
             this.label6 = new System.Windows.Forms.Label();
+            this.radioButton9 = new System.Windows.Forms.RadioButton();
             this.panel2.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -88,7 +89,7 @@ namespace GamerClickerV2
             // 
             // textBox1
             // 
-            this.textBox1.Location = new System.Drawing.Point(26, 145);
+            this.textBox1.Location = new System.Drawing.Point(26, 172);
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(48, 20);
             this.textBox1.TabIndex = 8;
@@ -96,7 +97,7 @@ namespace GamerClickerV2
             // 
             // textBox2
             // 
-            this.textBox2.Location = new System.Drawing.Point(92, 145);
+            this.textBox2.Location = new System.Drawing.Point(92, 172);
             this.textBox2.Name = "textBox2";
             this.textBox2.Size = new System.Drawing.Size(48, 20);
             this.textBox2.TabIndex = 9;
@@ -105,7 +106,7 @@ namespace GamerClickerV2
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(23, 125);
+            this.label2.Location = new System.Drawing.Point(23, 152);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(48, 13);
             this.label2.TabIndex = 10;
@@ -114,7 +115,7 @@ namespace GamerClickerV2
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(89, 125);
+            this.label3.Location = new System.Drawing.Point(89, 152);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(51, 13);
             this.label3.TabIndex = 11;
@@ -123,7 +124,7 @@ namespace GamerClickerV2
             // checkBox1
             // 
             this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(26, 176);
+            this.checkBox1.Location = new System.Drawing.Point(26, 203);
             this.checkBox1.Name = "checkBox1";
             this.checkBox1.Size = new System.Drawing.Size(116, 17);
             this.checkBox1.TabIndex = 12;
@@ -134,7 +135,7 @@ namespace GamerClickerV2
             // checkBox2
             // 
             this.checkBox2.AutoSize = true;
-            this.checkBox2.Location = new System.Drawing.Point(26, 199);
+            this.checkBox2.Location = new System.Drawing.Point(26, 226);
             this.checkBox2.Name = "checkBox2";
             this.checkBox2.Size = new System.Drawing.Size(104, 17);
             this.checkBox2.TabIndex = 13;
@@ -144,7 +145,7 @@ namespace GamerClickerV2
             // checkBox3
             // 
             this.checkBox3.AutoSize = true;
-            this.checkBox3.Location = new System.Drawing.Point(26, 222);
+            this.checkBox3.Location = new System.Drawing.Point(26, 249);
             this.checkBox3.Name = "checkBox3";
             this.checkBox3.Size = new System.Drawing.Size(102, 17);
             this.checkBox3.TabIndex = 14;
@@ -236,13 +237,14 @@ namespace GamerClickerV2
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.radioButton9);
             this.panel1.Controls.Add(this.radioButton1);
             this.panel1.Controls.Add(this.radioButton4);
             this.panel1.Controls.Add(this.radioButton2);
             this.panel1.Controls.Add(this.radioButton3);
             this.panel1.Location = new System.Drawing.Point(26, 19);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(114, 93);
+            this.panel1.Size = new System.Drawing.Size(114, 130);
             this.panel1.TabIndex = 6;
             // 
             // radioButton1
@@ -422,7 +424,6 @@ namespace GamerClickerV2
             this.radioButton5.TabStop = true;
             this.radioButton5.Text = "Auto Trade";
             this.radioButton5.UseVisualStyleBackColor = true;
-            this.radioButton5.CheckedChanged += new System.EventHandler(this.radioButton5_CheckedChanged);
             // 
             // radioButton6
             // 
@@ -462,6 +463,17 @@ namespace GamerClickerV2
             this.label6.Size = new System.Drawing.Size(39, 13);
             this.label6.TabIndex = 7;
             this.label6.Text = "Modes";
+            // 
+            // radioButton9
+            // 
+            this.radioButton9.AutoSize = true;
+            this.radioButton9.Location = new System.Drawing.Point(3, 95);
+            this.radioButton9.Name = "radioButton9";
+            this.radioButton9.Size = new System.Drawing.Size(72, 17);
+            this.radioButton9.TabIndex = 6;
+            this.radioButton9.Text = "Hold Both";
+            this.radioButton9.UseVisualStyleBackColor = true;
+            this.radioButton9.CheckedChanged += new System.EventHandler(this.radioButton9_CheckedChanged);
             // 
             // Form1
             // 
@@ -530,6 +542,7 @@ namespace GamerClickerV2
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.Panel panel6;
         private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.RadioButton radioButton9;
     }
 }
 
